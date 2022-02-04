@@ -1,6 +1,6 @@
 ---
 title: "Activity 5"
-author: "Name"
+author: "Viktoria Basso"
 output: github_document
 ---
 
@@ -25,7 +25,8 @@ We read in the same data from Activity 4 below, but notice that this code is now
 Compare this code output to the `load_data` chunk in your knitted Activity 4 `.md` report.
 What does enclosing an assignment code (i.e., `object_name <- r_code`) in parentheses do?
 
-**Response**:
+**Response**: When I rerun the code from Activity 4, I notice that I do not get 
+the table to page through. It notifies you of the 
 
 
 ### Data Codebook
