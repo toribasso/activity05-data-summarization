@@ -26,7 +26,8 @@ Compare this code output to the `load_data` chunk in your knitted Activity 4 `.m
 What does enclosing an assignment code (i.e., `object_name <- r_code`) in parentheses do?
 
 **Response**: When I rerun the code from Activity 4, I notice that I do not get 
-the table to page through. It notifies you of the 
+the table to page through. It notifies you of the first ten observations in the 
+datasheet. While the non-parentheses version does not.
 
 
 ### Data Codebook
@@ -80,6 +81,10 @@ There are a number of ways to create a code chunk:
 Below, create a code chunk and name it `median_earnings`.
 Make sure there is an empty line above and below the code chunk.
 
+```{r median_earnings, message=FALSE}
+college_recent_grads %>%
+  summary(median(median))
+```
 
 
 In your newly created R code chunk, verify that the median income for all majors was $36,000.
@@ -96,12 +101,21 @@ Be careful when you name your output summaries as we are dealing with things tha
 When I and obtaining numerical summaries for variables, I like to include the variable name in my summary name (e.g., `mean_med_earnings = mean(median)`).
 Create a code chunk and name it `summary_earnings`.
 
+```{r summary_earnings}
+summarise(college_recent_grads, 
+          mean_med_earnings=mean(median),
+          stdev_med_earnings=sd(median),
+          min_med_earnings=min(median),
+          median_med_earnings=median(median),
+          max_med_earnings=max(median))
+nrow(college_recent_grads)
+```
 
 
 Provide a discussion on what you believe the distribution of median earnings will look like.
 You should discuss the center, spread, and potential shape only using these values - I do NOT want to see any data visualizations here.
 
-**Response**:
+**Response**: I think that the distribution will be right skewed. The median is very close to the min and thus, more observations will be to the left on the graphic than the right.
 
 
 ### Median Earnings by Major Category
@@ -111,17 +125,49 @@ Using the `college_recent_grads` dataset and functions from `{dplyr}`, obtain si
 *Arrange* this summary table by the median earning.
 Create a code chunk and name it `major_earnings`.
 
+```{r major_earnings}
+college_recent_grads %>%
+  group_by(major_category) %>%
+    arrange(median) %>%
+summarise(mean_med_earnings=mean(median),
+          stdev_med_earnings=sd(median),
+          min_med_earnings=min(median),
+          median_med_earnings=median(median),
+          max_med_earnings=max(median),
+          count = n())
+```
 
 
 Provide a discussion on how each major compares to the overall distribution.
 You should discuss the center, spread, and potential shape only using these summary values - I do NOT want to see any data visualizations here.
 
-**Response**:
+**Response**: Agriculture and Natural Resources seem to be left skewed with a center at 35,000 and a min at 
+29,000 and max at 53,000. Arts seems to be left skewed again with a center at 30,750 and a min at 27,000 and
+a max at 50,000. Biology and life science has a very small spread with a min at 26,000 and a max at 45,000. 
+They seem to have a center at around 36,300. The next is business. It has a regular distribution with a min at 
+33,000 and a max at 62,000. The center is around 40,000. Communications and journalism has an extremely tight
+distribution with a min at 33,000 and a max at 35,000. The median is 35,000. The computers and mathematics has
+a normal width of distribution and does not seem to have very much of a skew as the median and means are near the
+center of the distribution. Education has a tighter distribution because of its small standard deviation. It also
+seems to have a normal distribution. Engineering has an extremely large standard deviation which means its shape
+is wide and long. It seems to be right skew with some very large median salaries. Health has a normal
+distribution. The measures of center are close and the standard deviation seems reasonable. Humanities and
+Liberal arts has a tight distribution with a small standard deviation and a slight right skew as the median is
+slightly closer to the lower value.
 
 
 Before we continue, add the following to the end of your pipeline (you will need to pipe first) in your `major_earnings` code chunk:
 
-```
+```{r knit}
+college_recent_grads %>%
+  group_by(major_category) %>%
+    arrange(median) %>%
+summarise(mean_med_earnings=mean(median),
+          stdev_med_earnings=sd(median),
+          min_med_earnings=min(median),
+          median_med_earnings=median(median),
+          max_med_earnings=max(median),
+          count = n()) %>%
 knitr::kable()
 ```
 
@@ -129,7 +175,8 @@ Knit your document with and without this last piped code.
 What changes about the output?
 When would this `knitr::kable` code be useful?
 
-**Response**:
+**Response**: This is super useful when you are trying to create a report or something that needs to be 
+professional looking in manner.
 
 
 ![](README-img/noun_pause.png) **Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
@@ -140,12 +187,21 @@ Let us see how well your descriptions in the [Median Earnings by Major Category]
 Plot the distribution of the variable `median` earnings of full-time, year-round workers for each `major_category` using the *boxplot* and *jitter* geometries.
 Create a code chunk and name it `major_boxplot`.
 
+```{r major_boxplot}
+ggplot(college_recent_grads,
+       aes(x=major_category,
+           y=median)) +
+  geom_jitter() +
+  geom_boxplot() 
+  
+```
 
 
 Provide a discussion on how your descriptions in the Median Earnings by Major Category section compares.
 
-**Response**:
-
+**Response**: I was spot on with the Engineering section. There is one major that is extremely high for that field. I would be interested in putting labels on the outliers.
+I was spot on for many of the other categories as well with journalism not even seeming
+to have a box for the boxplot because of how tight the distribution is.
 
 <img src="README-img/noun_pause.png" alt="pause" width = "20"/> <b>Planned Pause Point</b>: If you feel that you have a good understanding of these commands, feel free to start working on your project. The remainder of this activity will help to expand these commands.
 
@@ -163,12 +219,26 @@ In this code chunk,
 3. Assign/create a *rank* for each summarized value (rank for `total`, rank for `sharewomen`, etc.) and provide a meaningful name to each ranked column value.
 4. Arrange the results so that `major_category` appear in alphabetical order ("A" at the top).
 
+```{r category_rankings}
+college_recent_grads %>%
+  group_by(major_category) %>%
+  arrange(major_category) %>%
+summarise(sum_allmajors=sum(total),
+          median_sharewomen=median(sharewomen),
+          median_unemployment_rate=median(unemployment_rate),
+          median_median=median(median)) %>%
+summarise(rank_sumallmajors=rank(sum_allmajors),
+          rank_mediansharewomen=rank(median_sharewomen),
+          rank_medianunemprate=rank(median_unemployment_rate),
+          rank_median=rank(median_median)) 
+```
 
 
 Provide a discussion on how the `major_category` rankings compare.
 
-**Response**:
-
+**Response**: The major categories that have the highest share of women also have a 
+higher unemployment. The one that has the highest median rank, they one of the lower
+shares of women. This is unfortunate.
 
 ![](README-img/noun_pause.png) **(Final) Planned Pause Point**: If you have any questions, contact your instructor. Otherwise feel free to continue on.
 

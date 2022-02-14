@@ -49,7 +49,9 @@ Activity 4 `.md` report. What does enclosing an assignment code (i.e.,
 `object_name <- r_code`) in parentheses do?
 
 **Response**: When I rerun the code from Activity 4, I notice that I do
-not get the table to page through. It notifies you of the
+not get the table to page through. It notifies you of the first ten
+observations in the datasheet. While the non-parentheses version does
+not.
 
 ### Data Codebook
 
